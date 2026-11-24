@@ -6,21 +6,24 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
 //@JsonIgnoreProperties(value = {"prixAchat", "id"})
 public class Product {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Size(min = 1, max = 25)
+    @NotBlank(message = "Le nom est obligatoire")
+    @Size(min = 1, max = 25, message = "Le nom doit contenir entre 1 et 25 caractères")
     private String nom;
 
-    @Min(value = 1)
+    @Min(value = 1, message = "Le prix doit être supérieur ou égal à 1")
     private int prix;
 
+    @Min(value = 0, message = "Le prix d'achat ne peut pas être négatif")
     private int prixAchat;
 
     public Product(){

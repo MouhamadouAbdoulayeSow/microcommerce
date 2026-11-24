@@ -60,7 +60,8 @@ public class ProductController {
     //ajouter un produit
     @PostMapping(value = "/Produits")
     public ResponseEntity<Void> ajouterProduit(@Valid @RequestBody Product product) {
-        Product productAdded =  productDao.save(product);
+        product.setId(0);
+        Product productAdded = productDao.save(product);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -71,13 +72,20 @@ public class ProductController {
     }
 
     @DeleteMapping(value = "/Produits/{id}")
-    public void supprimerProduit(@PathVariable int id) {
+    public ResponseEntity<Void> supprimerProduit(@PathVariable int id) {
+        if (!productDao.existsById(id)) {
+            throw new ProduitIntrouvableException("Le produit avec l'id " + id + " est Introuvable.");
+        }
         productDao.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "/Produits")
-    public void updateProduit(@RequestBody Product product) {
-        productDao.save(product);
+    public Product updateProduit(@Valid @RequestBody Product product) {
+        if (!productDao.existsById(product.getId())) {
+            throw new ProduitIntrouvableException("Le produit avec l'id " + product.getId() + " est Introuvable.");
+        }
+        return productDao.save(product);
     }
 
     @GetMapping("/Produits/cher/{prixLimit}")
